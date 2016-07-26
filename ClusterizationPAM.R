@@ -1,4 +1,4 @@
-gt_data = read.csv("C:\\Users\\isys05\\Desktop\\Research\\TAIWAN_2016\\Data\\mercatorCoordinates.csv",head=TRUE,sep=",")
+gt_data = read.csv("~\\mercatorCoordinates.csv",head=TRUE,sep=",")
 head(gt_data)
 summary(gt_data)
 names(gt_data) <- c('northing','easting','clustering')
