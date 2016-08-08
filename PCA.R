@@ -7,10 +7,10 @@ summary(gt_data)
 gt_data$date <-as.Date( as.character(gt_data$date),"%Y-%m-%d")
 head(gt_data)
 sub_gt <- subset(gt_data,gt_data$date < as.Date('2012-12-31'))
-cloud(log10(quantity)~as.factor(date)+quadrant,data = sub_gt,groups =sub_gt$cluster,pretty = TRUE)
+cloud(date~x+y,data = sub_gt,groups =sub_gt$cluster,pretty = TRUE)
 
 pca_gt <- princomp(na.omit(gt_data[8:11]))
 summary(pca_gt,loadings=TRUE,digits=2)
 mean(gt_data$quadrant)
 factor(gt_data$quadrant)
-mean
+xyplot(gt_data$quantity~gt_data$quadrant,auto.key = FALSE)

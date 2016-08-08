@@ -25,6 +25,8 @@ y.pam$clusinfo
 
 plot(gt_data[4:5],col=y.pam$cluster+1L,pch = y.pam$cluster)
 
+write.table(gt_data, file = "C:\\Users\\isys05\\Desktop\\Research\\TAIWAN_2016\\Data\\ev_cluster_unique.csv", sep = ",", col.names = NA,
+            qmethod = "double")
 
 #------------DBSCAN (Density-based spatial clustering of application with noise)
 library("dbscan")
@@ -113,7 +115,6 @@ for(i in 1:(n-1))
   separation = km$
   av_distance = y.pam$clusinfo[i,3]+y.pam$clusinfo[i+1,4]
   db_score = db_score + (av_distance/separation)  
-  
 }
 db_score = (1/n)*db_score
 db_score
