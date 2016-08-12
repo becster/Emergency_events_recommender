@@ -11,7 +11,7 @@ n_end = nrow(sub_gt)
 head(sub_gt)
 
 #Creating the Time series object
-ts_gt <- ts(sub_gt$cluster,start = 1,end = n_end,frequency = 1)
+ts_gt <- ts(sub_gt$cluster,start = c(2012,10),end = c(2015,8),frequency = 365)
 
 plot(ts_gt, xlab = "Emergency Event", ylab = "Cluster", main ="Moving Average, order=10")
 m_v <- ma(ts_gt,order=10)
