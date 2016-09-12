@@ -16,7 +16,7 @@ plot(s)
 
 
 #classifying the entries in 34 different clusters.
-y.pam <- pam(gt_data, 20, stand=TRUE)
+y.pam <- pam(gt_data, 15, stand=TRUE)
 gt_data$cluster <- y.pam$cluster
 names(gt_data) <- c('northing','easting','cluster')
 

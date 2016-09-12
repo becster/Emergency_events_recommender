@@ -22,8 +22,8 @@ plot(s)
 y.pam <- pam(gt_data[4:5], 15, stand=TRUE)
 gt_data$cluster <- y.pam$cluster
 y.pam$clusinfo
-
-plot(gt_data[4:5],col=y.pam$cluster+1L,pch = y.pam$cluster)
+head(gt_data[5:6])
+plot(gt_data[6:5],col=y.pam$cluster+1L,pch = y.pam$cluster, xlab="Latitude",ylab="Longitude",main="PAM 15 Classes")
 
 write.table(gt_data, file = "C:\\Users\\isys05\\Desktop\\Research\\TAIWAN_2016\\Data\\ev_cluster_unique.csv", sep = ",", col.names = NA,
             qmethod = "double")
@@ -31,22 +31,30 @@ write.table(gt_data, file = "C:\\Users\\isys05\\Desktop\\Research\\TAIWAN_2016\\
 #------------DBSCAN (Density-based spatial clustering of application with noise)
 library("dbscan")
 class(gt_data)
-x <- as.matrix(gt_data[4:5])
-db <- dbscan(x, eps=1000 , minPts = 5,search = "kdtree")  
+x <- as.matrix(gt_data[5:6])
+db <- dbscan(x, eps=1000 , minPts = 120,search = "linear")  
 db
-pairs(x, col = db$cluster + 1L,pch=4)
+gt_data$dbscan <- db$cluster
+
+pairs(x, col = db$cluster + 1L,pch=)4
   
 
 
 
 
+
 #-----------K-means 4-----------------------------------------
-km <- kmeans(gt_data[4:5],15,iter.max = 10, nstart = 40)
-km$centers
+km <- kmeans(gt_data[5:6],15,iter.max = 10, nstart = 40)
+km$cluster
 plot(x,pch=9)
 points(km$centers,col = 2 + 1L,pch=6)
+gt_data$kmeans <- km$cluster
+head(gt_data)
 
 
+
+write.table(gt_data, file = "C:\\Users\\isys05\\Desktop\\Research\\TAIWAN_2016\\Data\\cluster_eval.csv", sep = ",", col.names = NA,
+            qmethod = "double")
 
 #-----------SOM-----------------------------------------------
 library("kohonen")
@@ -87,34 +95,21 @@ plot(som_model, type="mapping", bgcol = som_cluster, main = "Clusters")
 add.cluster.boundaries(som_model, som_cluster)
 
 
-
+library(clusterCrit)
 
 #Evualte best algorithm
 #PAM
-db_score = 0;
-n = nrow(y.pam$clusinfo)
-for(i in 1:(n-1))
-{
-  separation = y.pam$clusinfo[i,4]
-  av_distance = y.pam$clusinfo[i,3]+y.pam$clusinfo[i+1,4]
-  db_score = db_score + (av_distance/separation)  
-  
-}
-db_score = (1/n)*db_score
-db_score
-#--------------10 classes
-#1.667317 
-#--------------20 classes
-#1.821151
+PAM = matrix()
+PAM[0] <- intCriteria(as.matrix(gt_data[5:6]),gt_data$cluster,"Davies_Bouldin")
+PAM[1] <- intCriteria(as.matrix(gt_data[5:6]),gt_data$cluster,"Dunn")
+PAM[2] <- intCriteria(as.matrix(gt_data[5:6]),gt_data$cluster,"Silhouette")
 
-#K-Means
-db_score = 0;
-n = nrow(km$size)
-for(i in 1:(n-1))
-{
-  separation = km$
-  av_distance = y.pam$clusinfo[i,3]+y.pam$clusinfo[i+1,4]
-  db_score = db_score + (av_distance/separation)  
-}
-db_score = (1/n)*db_score
-db_score
+#KMEANS
+indx <- intCriteria(as.matrix(gt_data[5:6]),gt_data$kmeans,"Davies_Bouldin")
+indx <- intCriteria(as.matrix(gt_data[5:6]),gt_data$kmeans,"Dunn")
+indx <- intCriteria(as.matrix(gt_data[5:6]),gt_data$kmeans,"Silhouette")
+
+#DBSCAN
+indx <- intCriteria(as.matrix(gt_data[5:6]),gt_data$dbscan,"Davies_Bouldin")
+indx <- intCriteria(as.matrix(gt_data[5:6]),gt_data$dbscan,"Dunn")
+indx <- intCriteria(as.matrix(gt_data[5:6]),gt_data$dbscan,"Silhouette")

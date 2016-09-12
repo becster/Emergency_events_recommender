@@ -1,4 +1,4 @@
-library(forecast)
+#Singular input for LSTM
 
 gt_data = read.csv("C:\\Users\\isys05\\Desktop\\Research\\TAIWAN_2016\\Data\\ev_cluster_unique.csv",head=TRUE,sep=",")
 gt_data$date <-as.Date( as.character(gt_data$date),"%Y-%m-%d")
@@ -9,16 +9,9 @@ sub_gt <- subset(gt_data,gt_data$date < as.Date('2015-08-31'))
 table(sub_gt$cluster)
 nrow(sub_gt)
 head(sub_gt)
+input_singular <- matrix(ncol = 15,nrow = (nrow(sub_gt)),data=0) 
+for (i in 1:nrow(sub_gt)) {
+  input_singular[i,sub_gt$cluster[i]] = 1
+}
 
-#Creating the Time series object
-ts_gt <- ts(sub_gt$cluster,start = 1,end = 8684,frequency = 1)
-plot(ts_gt)
-
-#ARIMA
-LH.arima <- auto.arima(ts_gt)
-fcast <- forecast(LH.arima)
-plot(fcast,col = "red")
-accuracy(fcast,)
-
-
-
+write.table(input_singular, file = "C:\\Users\\isys05\\Desktop\\Research\\TAIWAN_2016\\Data\\net_input_singular.csv", sep = ",", col.names = NA,qmethod = "double")

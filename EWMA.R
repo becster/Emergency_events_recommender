@@ -7,18 +7,19 @@ library("TTR")
 gt_data = read.csv("C:\\Users\\isys05\\Desktop\\Research\\TAIWAN_2016\\Data\\ev_cluster_unique.csv",head=TRUE,sep=",")
 gt_data$date <-as.Date( as.character(gt_data$date),"%Y-%m-%d")
 #Subsetting data
-sub_gt <- subset(gt_data,gt_data$date < as.Date('2015-05-31') & gt_data$date > as.Date('2012-12-01'))
-#sub_gt$cluster <- factor(sub_gt$cluster)
-table(sub_gt$cluster)
-end_ts = nrow(sub_gt)
+sub_gt <- subset(gt_data,gt_data$date < as.Date('2015-05-31'))
+sub_gt$cluster <- factor(sub_gt$cluster)
+n_end = nrow(sub_gt)
+n_end
+head(sub_gt)
 
 #Creating the Time series object
-ts_gt <- ts(sub_gt$cluster,start = 1,end = end_ts,frequency = 1 )
+ts_gt <- ts(sub_gt$cluster,start = c(2012,10),end = c(2015,8),frequency = 300 )
+ts_gt
 
-plot(ts_gt, xlab = "Emergency Event", ylab = "Cluster", main ="Moving Average, order=7")
-ewma <- EMA(ts_gt,n=10)
-fcast <- forecast(ewma,robust = TRUE,h=1000,level=c(80,95))
-lines(m_v,col = "red")
-accuracy(fcast,gt_data$cluster[628:637])
-plot(fcast)
+ewma <- EMA(ts_gt,n=3,wilder = TRUE)
+fcast <- forecast(ewma,h=50)
+accuracy(fcast,gt_data$cluster[n_end:(n_end+50)])
+plot(fcast,ylim=c(0,15),main="EWMA, order=10")
+
 
