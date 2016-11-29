@@ -1,0 +1,48 @@
+import csv 
+import utilities as u
+import numpy as np
+
+input_data = list()
+
+with open("/root/PycharmProjects/Tutorials/GuatemalaData/net_input_percentage.csv", 'rb') as csvfile:
+    i_reader = csv.reader(csvfile,delimiter=',')
+    headers = i_reader.next()
+    for row in i_reader:
+        input_data.append(row[1:16])
+
+#valid_text = input_data[:u.valid_size]
+valid_text = input_data[950:]
+train_text = input_data[u.valid_size:]
+'''Get the number of elements in an array'''
+train_size = len(train_text)
+
+class BatchGenerator(object):
+    def __init__(self, matrix_ev, batch_size, num_unrollings):
+        self._batch_size = batch_size
+        self._matrix = matrix_ev
+        self._matrix_size = len(matrix_ev)
+        self._num_unrollings = num_unrollings
+        segment = 1#self._matrix_size // batch_size
+        self._cursor = [offset * segment for offset in range(batch_size)]
+        self._last_batch = self._next_batch()
+
+    def _next_batch(self):
+        batch = np.zeros(shape=(self._batch_size, u.area_size), dtype=np.float)
+        for b in range(self._batch_size):
+            try:
+                # print("Cursor b:", self._cursor[b])
+                batch[b] = self._matrix[self._cursor[b]]
+                self._cursor[b] = (self._cursor[b] + 1) % self._matrix_size
+            except ValueError as E:
+                print("Error!", E)
+        return batch
+
+    def next(self):
+        batches = [self._last_batch]
+        for step in range(self._num_unrollings):
+            batches.append(self._next_batch())
+        self._last_batch = batches[-1]
+        return batches
+
+train_batches = BatchGenerator(train_text, u.batch_size, u.num_unrollings)
+valid_batches = BatchGenerator(valid_text, u.batch_size, u.num_unrollings)
